@@ -97,9 +97,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   items: const [
                     DropdownMenuItem(
-                        value: 'alarm_1.mp3', child: Text('デフォルト (ピピピ)')),
-                    DropdownMenuItem(value: 'alarm_2.mp3', child: Text('ベル音')),
-                    DropdownMenuItem(value: 'alarm_3.mp3', child: Text('メロディ')),
+                        value: 'assets/sounds/default_alarm.mp3', child: Text('デフォルト (ピピピ)')),
+                    DropdownMenuItem(value: 'assets/sounds/bell.mp3', child: Text('ベル音')),
+                    DropdownMenuItem(value: 'assets/sounds/melody.mp3', child: Text('メロディ')),
                   ],
                   onChanged: (value) {
                     if (value != null) {

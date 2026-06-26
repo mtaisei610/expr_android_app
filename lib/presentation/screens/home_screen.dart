@@ -6,7 +6,7 @@ import '../../domain/settings_notifier.dart';
 // 3. 遷移先の画面や使用するウィジェットのインポート（実際のパスに合わせて調整してください）
 import 'timer_screen.dart';
 import 'settings_screen.dart';
-import '../egg_selector_button.dart';
+import '../widgets/egg_selector_button.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});

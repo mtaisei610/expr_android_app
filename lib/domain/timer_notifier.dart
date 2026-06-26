@@ -59,7 +59,7 @@ class TimerNotifier extends Notifier<TimerState> {
     );
 
     final settings = ref.read(settingsNotifierProvider).value;
-    final soundPath = settings?.soundPath ?? 'defalut_sound.mp3';
+    final soundPath = settings?.soundPath ?? 'assets/sounds/default_alarm.mp3';
 
     _notificationService.scheduleAlarm(totalSeconds, soundPath);
 

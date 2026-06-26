@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 
 class AudioService {
   final AudioPlayer _player = AudioPlayer();
@@ -11,6 +12,7 @@ class AudioService {
   /// as an asset path. Otherwise it will be treated as a file path/URL.
   Future<void> play(String soundPath) async {
     try {
+      debugPrint('Playing sound: $soundPath');
       if (soundPath.startsWith('assets/')) {
         // audioplayers AssetSource expects path relative to assets/
         final relative = soundPath.replaceFirst('assets/', '');
@@ -18,8 +20,8 @@ class AudioService {
       } else {
         await _player.play(DeviceFileSource(soundPath));
       }
-    } catch (_) {
-      // ignore errors for now; higher-level code may log if needed
+    } catch (e) {
+      debugPrint('Error playing sound: $e');
     }
   }
 

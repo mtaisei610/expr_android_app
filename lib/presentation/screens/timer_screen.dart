@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// TODO: 担当Bの実装完了後、以下のプロバイダーをインポートする
-// import '../../domain/timer_notifier.dart';
+import '../../domain/timer_notifier.dart';
+import 'dart:ui'; // FontFeatureのため
 
 class TimerScreen extends ConsumerWidget {
   const TimerScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: 担当Bの実装完了後、TimerNotifierから状態を購読する
-    // final timerState = ref.watch(timerNotifierProvider);
-    // final int remainingSeconds = timerState.remainingSeconds;
-    // final bool isFinished = timerState.isFinished;
-
-    // UI確認用のモック値
-    const int remainingSeconds = 125; // 2分5秒
-    const bool isFinished = false;
+    final timerState = ref.watch(timerNotifierProvider);
+    final int remainingSeconds = timerState.remainingSeconds;
+    final bool isFinished = timerState.isFinished;
 
     // MM:SS形式へのフォーマット
     final String minutesStr = (remainingSeconds ~/ 60).toString().padLeft(2, '0');
@@ -52,10 +47,10 @@ class TimerScreen extends ConsumerWidget {
             ],
             const SizedBox(height: 48),
             ElevatedButton.icon(
-              icon: const Icon(isFinished ? Icons.stop : Icons.cancel),
-              label: const Text(
+              icon: Icon(isFinished ? Icons.stop : Icons.cancel),
+              label: Text(
                 isFinished ? '停止' : 'キャンセル',
-                style: TextStyle(fontSize: 20),
+                style: const TextStyle(fontSize: 20),
               ),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
@@ -63,8 +58,7 @@ class TimerScreen extends ConsumerWidget {
                 foregroundColor: isFinished ? Colors.red.shade900 : Colors.black87,
               ),
               onPressed: () {
-                // TODO: 担当Bの実装完了後、タイマー停止処理を呼び出す
-                // ref.read(timerNotifierProvider.notifier).stopTimer();
+                ref.read(timerNotifierProvider.notifier).stopTimer();
                 Navigator.pop(context); // HomeScreenへ戻る
               },
             ),
