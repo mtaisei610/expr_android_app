@@ -12,6 +12,20 @@
 2. `test`ブランチにmergeし，テストする
 3. `main`ブランチにmerge
 
+## 注意
+
+### 高専校内ではgradleのプロキシを通す必要あり．
+
+下の内容を`~/.gradle/gradle.properties`に保存
+
+```gradle
+systemProp.http.proxyHost=po.cc.ibaraki-ct.ac.jp
+systemProp.http.proxyPort=3128
+
+systemProp.https.proxyHost=po.cc.ibaraki-ct.ac.jp
+systemProp.https.proxyPort=3128
+```
+
 ## 仕様
 
 ### libディレクトリ構造
