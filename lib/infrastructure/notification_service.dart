@@ -1,5 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_timezone/flutter_timezone.dart'; // 最新の非推奨ではないパッケージに変更
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tzdata;
 
@@ -15,7 +15,9 @@ class NotificationService {
     // Initialize timezone package
     tzdata.initializeTimeZones();
     try {
-      final String localTz = await FlutterNativeTimezone.getLocalTimezone();
+      // flutter_native_timezone から flutter_timezone の API に変更
+      final TimezoneInfo lTz = await FlutterTimezone.getLocalTimezone();
+      final localTz = lTz.toString();
       tz.setLocalLocation(tz.getLocation(localTz));
     } catch (_) {
       // Fallback to UTC if timezone lookup fails
@@ -52,7 +54,7 @@ class NotificationService {
       'Time is up',
       scheduled,
       platform,
-      androidAllowWhileIdle: true,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: null,
