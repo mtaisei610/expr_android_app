@@ -1,24 +1,30 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/egg_selector_button.dart';
+import 'package:flutter/material.dart'; // 1. Flutter基本UIのインポート
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // 2. Riverpodのインポート
+
+import '../../domain/timer_notifier.dart';
+import '../../domain/settings_notifier.dart';
+// 3. 遷移先の画面や使用するウィジェットのインポート（実際のパスに合わせて調整してください）
 import 'timer_screen.dart';
 import 'settings_screen.dart';
-// TODO: 担当Bの実装完了後、以下のプロバイダーをインポートする
-// import '../../domain/timer_notifier.dart';
-// import '../../domain/settings_notifier.dart';
+import '../egg_selector_button.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: 担当Bの実装完了後、設定状態からカスタム分数を取得する
-    // final customMinutes = ref.watch(settingsNotifierProvider).customTime;
-    const int customMinutes = 15; // UI確認用のモック値
+    // 4. AsyncNotifierの状態（AsyncValue）から安全に値を取り出す
+    final settingsAsync = ref.watch(settingsNotifierProvider);
+
+    // データがロード中、またはエラーの場合はデフォルトの 5 分、ロード完了なら保存された値を使用
+    final int customMinutes = settingsAsync.when(
+      data: (state) => state.customTime,
+      loading: () => 5,
+      error: (_, __) => 5,
+    );
 
     void startTimer(int minutes) {
-      // TODO: 担当Bの実装完了後、タイマー開始メソッドを呼び出す
-      // ref.read(timerNotifierProvider.notifier).startTimer(minutes);
+      ref.read(timerNotifierProvider.notifier).startTimer(minutes);
 
       Navigator.push(
         context,
@@ -65,7 +71,7 @@ class HomeScreen extends ConsumerWidget {
                 onPressed: () => startTimer(12),
               ),
               EggSelectorButton(
-                label: '任意 ($customMinutes分)',
+                label: 'プリセット ($customMinutes分)',
                 minutes: customMinutes,
                 onPressed: () => startTimer(customMinutes),
               ),

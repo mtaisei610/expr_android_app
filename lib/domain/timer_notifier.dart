@@ -28,7 +28,7 @@ class TimerState {
   }
 }
 
-final timerNotifierProvider = NotifierProvider<TImerNotifier, TimerState>(() {
+final timerNotifierProvider = NotifierProvider<TimerNotifier, TimerState>(() {
   return TimerNotifier();
 });
 
@@ -36,7 +36,7 @@ class TimerNotifier extends Notifier<TimerState> {
   Timer? _ticker;
 
   final AudioService _audioService = AudioService();
-  final NotificationService _notificationService = NottificationService();
+  final NotificationService _notificationService = NotificationService();
 
   @override
   TimerState build() {

@@ -52,10 +52,10 @@ class TimerScreen extends ConsumerWidget {
             ],
             const SizedBox(height: 48),
             ElevatedButton.icon(
-              icon: Icon(isFinished ? Icons.stop : Icons.cancel),
-              label: Text(
+              icon: const Icon(isFinished ? Icons.stop : Icons.cancel),
+              label: const Text(
                 isFinished ? '停止' : 'キャンセル',
-                style: const TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 20),
               ),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
