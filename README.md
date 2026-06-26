@@ -6,6 +6,13 @@
 
 **Android** / **Flutter**
 
+## スクリーンショット
+
+![screenshot1](./screenshot1.png)
+![screenshot2](./screenshot2.png)
+
+[screen recored](./record.webm)
+
 ## 開発手順
 
 1. 各自自分の名前のブランチで機能を開発し，push
