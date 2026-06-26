@@ -4,10 +4,10 @@ class StorageService {
   static const String _keyCustomTime = 'custom_time_minutes';
   static const String _keyAlarmSound = 'alarm_sound_path';
 
-  // 1. SettingsNotifierで通常通り「StorageService()」と呼べるように未命名コンストラクタを定義
+  
   StorageService();
 
-  // 2. SharedPreferencesインスタンスを取得するための共通プライベートヘルパーメソッド
+  
   Future<SharedPreferences> _getPrefs() async {
     return await SharedPreferences.getInstance();
   }

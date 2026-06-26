@@ -1,5 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_timezone/flutter_timezone.dart'; // 最新の非推奨ではないパッケージに変更
+import 'package:flutter_timezone/flutter_timezone.dart'; 
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tzdata;
 
@@ -12,15 +12,15 @@ class NotificationService {
   factory NotificationService() => _instance;
 
   Future<void> initialize() async {
-    // Initialize timezone package
+    
     tzdata.initializeTimeZones();
     try {
-      // flutter_native_timezone から flutter_timezone の API に変更
+      
       final TimezoneInfo lTz = await FlutterTimezone.getLocalTimezone();
       final localTz = lTz.toString();
       tz.setLocalLocation(tz.getLocation(localTz));
     } catch (_) {
-      // Fallback to UTC if timezone lookup fails
+      
       tz.setLocalLocation(tz.getLocation('UTC'));
     }
 

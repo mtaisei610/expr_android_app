@@ -10,7 +10,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  // TextEditingControllerの初期化を、データロード後に安全に行うためのフラグ
+  
   bool _isControllerInitialized = false;
   late TextEditingController _timeController;
 
@@ -28,10 +28,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 1. AsyncValue<SettingsState> として状態を監視
+    
     final settingsAsync = ref.watch(settingsNotifierProvider);
 
-    // Riverpodの .when を使って、ロード中、エラー、データありの状態を綺麗に分岐
+    
     return settingsAsync.when(
       loading: () => const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -40,13 +40,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         body: Center(child: Text('設定の読み込みに失敗しました: $error')),
       ),
       data: (settingsState) {
-        // 2. データがロードされたら、1度だけTextEditingControllerに初期値をセット
+        
         if (!_isControllerInitialized) {
           _timeController.text = settingsState.customTime.toString();
           _isControllerInitialized = true;
         }
 
-        // 保存されている音源パスを取得
+        
         final selectedSound = settingsState.soundPath;
 
         return Scaffold(
@@ -81,7 +81,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         const SnackBar(content: Text('任意の時間を保存しました')),
                       );
                     }
-                  }, // 不要なバックスラッシュを削除
+                  }, 
                 ),
                 const SizedBox(height: 40),
                 const Text(
@@ -91,7 +91,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
                   value:
-                      selectedSound, // initialValue から value に変更（状態変更に追従させるため）
+                      selectedSound, 
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                   ),
@@ -107,7 +107,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           .read(settingsNotifierProvider.notifier)
                           .updateSound(value);
                     }
-                  }, // 不要なバックスラッシュを削除
+                  }, 
                 ),
               ],
             ),
