@@ -86,3 +86,107 @@ lib/
 * **担当C (インフラ ＆ ネイティブ機能)**
 * **対象:** `AudioService`, `NotificationService`, `StorageService`
 * **タスク:** 音声再生ライブラリの選定と実装、バックグラウンド実行を担保するローカル通知機能の実装、設定値のローカル保存処理。最も技術的難易度が高い部分を専任する。
+
+---
+
+### インターフェース設計と詳細処理
+
+以下にRiverpodを用いた状態管理を前提とした仕様を定義する。
+
+#### 1. Infrastructure層（外部サービス）
+
+**`StorageService` (設定の永続化)**
+
+* `Future<int> getCustomTime()`
+* 処理: SharedPreferencesから「任意」の設定時間（分）を取得。未設定ならデフォルト値（例: 5）を返す。
+
+* `Future<void> saveCustomTime(int minutes)`
+* 処理: 引数の数値をSharedPreferencesに保存。
+
+* `Future<String> getAlarmSound()`
+* 処理: SharedPreferencesからアラーム音のファイルパス（または識別子）を取得。未設定ならデフォルトパスを返す。
+
+* `Future<void> saveAlarmSound(String soundPath)`
+* 処理: 引数のパスをSharedPreferencesに保存。
+
+**`NotificationService` (バックグラウンド通知)**
+
+* `Future<void> initialize()`
+* 処理: `flutter_local_notifications`の初期化処理と権限リクエストを行う。`main.dart`で実行。
+
+* `Future<void> scheduleAlarm(int seconds, String soundPath)`
+* 処理: 現在時刻から`seconds`秒後に、指定された`soundPath`の音を鳴らす通知をOSにスケジュール登録する。
+
+* `Future<void> cancelAlarm()`
+* 処理: 登録済みの保留中通知をすべてキャンセルする。
+
+**`AudioService` (フォアグラウンド音声再生)**
+
+* `Future<void> play(String soundPath)`
+* 処理: `audioplayers`等を用いて指定パスの音源をループ再生する。
+
+* `Future<void> stop()`
+* 処理: 再生中の音声を停止する。
+
+#### 2. Domain層（状態管理・ビジネスロジック）
+
+**`SettingsNotifier` (設定状態の管理)**
+
+* **状態 (State):** `SettingsState` (メンバ: `int customTime`, `String soundPath`)
+* `Future<void> build()` (戻り値: `SettingsState`)
+* 処理: `StorageService`を呼び出し、保存された時間と音声を読み込んで状態を初期化する。
+
+* `Future<void> updateCustomTime(int minutes)`
+* 処理: `StorageService.saveCustomTime`を呼び出し、成功後にStateの`customTime`を更新する。
+
+* `Future<void> updateSound(String soundPath)`
+* 処理: `StorageService.saveAlarmSound`を呼び出し、成功後にStateの`soundPath`を更新する。
+
+**`TimerNotifier` (タイマー状態の管理)**
+
+* **状態 (State):** `TimerState` (メンバ: `int remainingSeconds`, `bool isRunning`, `bool isFinished`)
+* `TimerState build()`
+* 処理: 初期状態(`0`, `false`, `false`)を返す。
+
+* `void startTimer(int minutes)`
+* 処理:
+
+1. Stateを(`minutes * 60`, `true`, `false`)に更新。
+2. `SettingsNotifier`から現在の`soundPath`を取得。
+3. `NotificationService.scheduleAlarm(minutes * 60, soundPath)`を実行（バックグラウンド保険）。
+4. Dartの`Timer.periodic`を1秒間隔で起動し、毎秒`remainingSeconds`を減算してStateを更新。
+5. `remainingSeconds`が0になったら`Timer.periodic`を破棄し、Stateを(`0`, `false`, `true`)に更新。`AudioService.play(soundPath)`を呼び出す。
+
+* `void stopTimer()`
+* 処理:
+
+1. 動作中の`Timer.periodic`を破棄。
+2. `NotificationService.cancelAlarm()`を実行。
+3. `AudioService.stop()`を実行。
+4. Stateを初期状態に戻す。
+
+---
+
+### アプリケーションの処理の流れ
+
+1. **アプリ起動時:** `main()`関数内で`NotificationService.initialize()`を実行し、通知権限を確保する。
+2. **初期画面 (`HomeScreen`):**
+
+* 描画時: `SettingsNotifier`がストレージから「任意」の時間設定を読み込む。
+* 操作時: 4つのいずれかのボタンを押下。固定値（7, 9, 12）、または`SettingsNotifier`が保持する「任意」の数値を`TimerNotifier.startTimer(minutes)`の引数として渡す。
+* 遷移: `TimerScreen`へ遷移(`Navigator.push`)。
+
+1. **タイマー実行中 (`TimerScreen`):**
+
+* 描画: `TimerNotifier`の`remainingSeconds`を購読し、分・秒に変換してUIに毎秒反映する。
+* バックグラウンド移行時: OSの仕様でDartの処理が止まっても、手順2で登録されたOSへのローカル通知スケジュールが生きているため、時間になれば確実に通知と音が鳴る。
+
+1. **タイマー終了時:**
+
+* フォアグラウンドの場合、`TimerNotifier`内で`AudioService.play`が呼ばれ音が鳴る。
+* UIは`isFinished == true`を検知し、「キャンセル」ボタンを「停止」ボタンに切り替え、終了エフェクトを表示する。
+
+1. **停止・キャンセル操作:**
+
+* 「停止/キャンセル」ボタン押下時、`TimerNotifier.stopTimer()`が呼ばれる。
+* アラーム音の停止、OS通知スケジュールの破棄が行われ、`Navigator.pop`で`HomeScreen`へ戻る。
