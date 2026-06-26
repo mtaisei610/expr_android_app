@@ -8,8 +8,8 @@
 
 ## スクリーンショット
 
-![screenshot1](./screenshot1.png)
-![screenshot2](./screenshot2.png)
+![screenshot1](./screenshot1.jpg)
+![screenshot2](./screenshot2.jpg)
 
 [screen recored](./record.webm)
 
